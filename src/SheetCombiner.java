@@ -20,17 +20,24 @@ public class SheetCombiner{
 	    FileOutputStream fileOut = new FileOutputStream("Scouting Data.xls");
 	    HSSFSheet sheet = robotDataWorkbook.getSheetAt(0);
 	    HSSFSheet databaseSheet = databaseWorkbook.getSheetAt(0);
-
+	    double matchNumber = 0;
 	    Iterator<Row> rowIterator = sheet.iterator();
 	   
 	    while(rowIterator.hasNext()) {
+	    	int rowNumber = 0;
+	    
 	        Row row = rowIterator.next();
 		    int nextRow = databaseSheet.getLastRowNum()+1;
+		    switch(rowNumber){
+		    
+		    }
 	        //For each row, iterate through each columns
 		    int cellCount = 0;
 	        Iterator<Cell> cellIterator = row.cellIterator();
-            Row dataRow = databaseSheet.createRow(nextRow);    
+            Row dataRow = databaseSheet.createRow(nextRow);   
+            
 	        while(cellIterator.hasNext()) {
+	        		int columnNumber = 0;
 	            	Cell cell = cellIterator.next();
 	            	Cell dataCell = dataRow.createCell(cellCount); 
 	            	switch (cell.getCellType()){
@@ -46,10 +53,17 @@ public class SheetCombiner{
 	            		dataCell.setCellValue(cell.getStringCellValue());
 	            		break;   	
 	            	}
+	            	if(rowNumber == 0 && columnNumber ==0){
+	            		 matchNumber = cell.getNumericCellValue();
+	            	}
 	            cellCount=cell.getColumnIndex()+1;
 	        }
+	        rowNumber++;
 	    }
 
+	    File oldName = new File("Robot Data.xls");
+	    File newName = new File("Robot Data" + matchNumber);
+	    oldName.renameTo(newName);
 
 	    databaseWorkbook.write(fileOut);
 	    fileOut.close();
