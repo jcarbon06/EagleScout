@@ -18,7 +18,11 @@ public class SheetCombiner {
 		try {
 			FileInputStream robotDataFile = new FileInputStream(new File("Robot Data.xls"));
 			FileInputStream masterDataFile = new FileInputStream(new File("Scouting Data Master.xls"));
-			FileOutputStream masterDataBackup = new FileOutputStream(new File("Scouting Data Master Backup.xls"));
+			File masterDataBackupFile = new File("Scouting Data Master Backup.xls");
+			if(!masterDataBackupFile.exists()){
+				masterDataBackupFile.createNewFile();
+			}
+			FileOutputStream masterDataBackup = new FileOutputStream(masterDataBackupFile);
 			HSSFWorkbook robotDataWorkbook = new HSSFWorkbook(robotDataFile);
 			HSSFWorkbook databaseWorkbook = new HSSFWorkbook(masterDataFile);
 			databaseWorkbook.write(masterDataBackup);
@@ -72,17 +76,20 @@ public class SheetCombiner {
 			if (!folder.exists()) {
 				folder.mkdirs();
 			}
-			File movedRobotData = new File("./Raw Data/Robot Data from match " + (int) matchNumber + ".xls");
+			String timestamp = 	new SimpleDateFormat("hh.mm.ss.SS").format(new Date());
+			File movedRobotData = new File("./Raw Data/Robot Data from match " + (int) matchNumber +" "+timestamp+ ".xls");
 			if (!movedRobotData.exists()) {
 				movedRobotData.createNewFile();
 			}
+			FileOutputStream robotDataMover = new FileOutputStream(movedRobotData);
+			databaseWorkbook.write(scoutingMasterOutput);
+			robotDataWorkbook.write(robotDataMover);
 			robotDataWorkbook.close();
 			databaseWorkbook.close();
-			FileOutputStream robotDataMover = new FileOutputStream(movedRobotData);
-			robotDataWorkbook.write(robotDataMover);
-			databaseWorkbook.write(scoutingMasterOutput);
-			scoutingMasterOutput.close();
 			robotDataFile.close();
+			File oldRobotFile = new File("Robot Data.xls");
+			oldRobotFile.delete();
+			scoutingMasterOutput.close();
 			masterDataFile.close();
 
 		} catch (FileNotFoundException e) {
